@@ -9,8 +9,8 @@
     <path fill="url(#maGradWord)" d="M36 0h108a36 36 0 0 1 36 36v88a36 36 0 0 1-36 36H92l-40 34a10 10 0 0 1-16-8v-26h0a36 36 0 0 1-36-36V36A36 36 0 0 1 36 0z"/>
     <path fill="#fff" d="M74 34h32a8 8 0 0 1 8 8v30h30a8 8 0 0 1 8 8v32a8 8 0 0 1-8 8h-30v30a8 8 0 0 1-8 8H74a8 8 0 0 1-8-8v-30H36a8 8 0 0 1-8-8V80a8 8 0 0 1 8-8h30V42a8 8 0 0 1 8-8z"/>
   </g>
-  <g fill="#0F172A" font-family="'Inter','Segoe UI',system-ui,-apple-system,sans-serif" font-size="96" font-weight="700">
+  <g fill="#ffffff" font-family="'Inter','Segoe UI',system-ui,-apple-system,sans-serif" font-size="96" font-weight="700">
     <text x="234" y="140">Med<tspan fill="url(#maGradWord)">Akcess</tspan></text>
   </g>
-  <text x="238" y="188" fill="#64748B" font-family="'Inter','Segoe UI',system-ui,-apple-system,sans-serif" font-size="26" font-weight="500" letter-spacing="6">TELEHEALTH</text>
+  <text x="238" y="188" fill="#94a3b8" font-family="'Inter','Segoe UI',system-ui,-apple-system,sans-serif" font-size="26" font-weight="500" letter-spacing="6">TELEHEALTH</text>
 </svg>
