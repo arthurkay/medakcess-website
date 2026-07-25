@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedAkcess — Healthcare, One Message Away</title>
+  <meta name="description" content="Consult verified doctors via WhatsApp. No app download. No registration. Just send a message. MedAkcess connects patients with healthcare professionals instantly.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'med': {
+              'accent': '#6366f1',
+              'accent-light': '#818cf8',
+              'green': '#25D366',
+              'green-dark': '#1ebe57',
+              'dark': '#1d1d1f',
+              'light': '#f5f5f7',
+            }
+          },
+          fontFamily: {
+            'inter': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-12px) rotate(-2deg); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 0.2; }
+      100% { transform: scale(0.8); opacity: 0.5; }
+    }
+    @keyframes typing-dot {
+      0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+      30% { opacity: 1; transform: translateY(-4px); }
+    }
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slide-in-left {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-pulse-ring { animation: pulse-ring 4s ease-in-out infinite; }
+    .typing-dot-1 { animation: typing-dot 1.4s ease-in-out infinite 0s; }
+    .typing-dot-2 { animation: typing-dot 1.4s ease-in-out infinite 0.2s; }
+    .typing-dot-3 { animation: typing-dot 1.4s ease-in-out infinite 0.4s; }
+
+    /* Scroll animations */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* Glass effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .dark .glass {
+      background: rgba(29, 29, 31, 0.72);
+    }
+
+    /* Decorative rings */
+    .ring-decor {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(99, 102, 241, 0.08);
+      pointer-events: none;
+    }
+    .dark .ring-decor {
+      border-color: rgba(99, 102, 241, 0.06);
+    }
+
+    /* FAQ accordion */
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), padding 0.35s ease;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+    }
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+    }
+    .faq-chevron {
+      transition: transform 0.3s ease;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+
+    /* Feature tab active indicator */
+    .tab-indicator {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease;
+    }
+
+    /* Smooth scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb { background: #424245; }
+  </style>
+</head>
+<body class="font-inter bg-white dark:bg-[#0a0a0a] text-med-dark dark:text-[#f5f5f7] transition-colors duration-500 overflow-x-hidden">
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 glass border-b border-black/5 dark:border-white/5 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-18">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2.5 shrink-0">
+          <img src="assets/logo.svg" alt="MedAkcess" class="h-9 w-auto dark:invert dark:hue-rotate-180">
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#features" class="text-sm font-medium text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light transition-colors">Features</a>
+          <a href="#how-it-works" class="text-sm font-medium text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light transition-colors">How It Works</a>
+          <a href="#faq" class="text-sm font-medium text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light transition-colors">FAQ</a>
+        </div>
+
+        <!-- Right side -->
+        <div class="flex items-center gap-3">
+          <!-- Dark mode toggle -->
+          <button id="theme-toggle" class="relative w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors" aria-label="Toggle dark mode">
+            <svg class="w-5 h-5 sun-icon dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            <svg class="w-5 h-5 moon-icon hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+            </svg>
+          </button>
+
+          <!-- CTA Button -->
+          <a href="https://wa.me/260979040735" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-2 bg-med-green hover:bg-med-green-dark text-white font-semibold text-sm px-5 py-2.5 rounded-full transition-all duration-200 shadow-lg shadow-med-green/20 hover:shadow-med-green/40 hover:scale-105">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Get Started
+          </a>
+
+          <!-- Mobile menu button -->
+          <button id="mobile-menu-btn" class="md:hidden w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors" aria-label="Open menu">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="mobile-menu fixed inset-0 z-[60] bg-white dark:bg-[#0a0a0a] md:hidden">
+    <div class="flex flex-col h-full p-6">
+      <div class="flex justify-between items-center mb-12">
+        <img src="assets/logo.svg" alt="MedAkcess" class="h-9 w-auto dark:invert dark:hue-rotate-180">
+        <button id="mobile-menu-close" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors" aria-label="Close menu">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-col gap-6">
+        <a href="#features" class="text-2xl font-semibold text-med-dark dark:text-white mobile-nav-link">Features</a>
+        <a href="#how-it-works" class="text-2xl font-semibold text-med-dark dark:text-white mobile-nav-link">How It Works</a>
+        <a href="#faq" class="text-2xl font-semibold text-med-dark dark:text-white mobile-nav-link">FAQ</a>
+      </div>
+      <div class="mt-auto pb-8">
+        <a href="https://wa.me/260979040735" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 bg-med-green hover:bg-med-green-dark text-white font-semibold text-lg px-6 py-4 rounded-full transition-all duration-200 w-full">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== HERO ===================== -->
+  <section id="hero" class="relative min-h-screen flex items-center pt-16 lg:pt-0 overflow-hidden">
+    <!-- Decorative rings -->
+    <div class="ring-decor w-[600px] h-[600px] -top-40 -right-40 animate-pulse-ring"></div>
+    <div class="ring-decor w-[400px] h-[400px] top-20 -right-20 animate-pulse-ring" style="animation-delay: 1s;"></div>
+    <div class="ring-decor w-[500px] h-[500px] -bottom-40 -left-40 animate-pulse-ring" style="animation-delay: 2s;"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-0 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Left: Text -->
+        <div class="text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 bg-med-accent/10 dark:bg-med-accent-light/10 text-med-accent dark:text-med-accent-light text-sm font-semibold px-4 py-2 rounded-full mb-6">
+            <span class="w-2 h-2 bg-med-green rounded-full animate-pulse"></span>
+            Live in Zambia
+          </div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.08] mb-6">
+            Healthcare,<br>
+            <span class="text-med-accent">One Message Away.</span>
+          </h1>
+          <p class="text-lg sm:text-xl text-med-dark/60 dark:text-white/60 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
+            Consult verified doctors via WhatsApp. No app download. No registration. Just send a message.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <a href="https://wa.me/260979040735" target="_blank" rel="noopener" class="group inline-flex items-center justify-center gap-2.5 bg-med-green hover:bg-med-green-dark text-white font-semibold text-base px-7 py-4 rounded-full transition-all duration-200 shadow-xl shadow-med-green/25 hover:shadow-med-green/40 hover:scale-105">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Chat with a Doctor
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+            </a>
+            <a href="#features" class="inline-flex items-center justify-center gap-2 border-2 border-med-dark/15 dark:border-white/15 hover:border-med-accent dark:hover:border-med-accent-light text-med-dark dark:text-white font-semibold text-base px-7 py-4 rounded-full transition-all duration-200 hover:scale-105">
+              For Doctors
+            </a>
+          </div>
+          <!-- Trust badges -->
+          <div class="flex items-center gap-6 mt-10 justify-center lg:justify-start text-sm text-med-dark/40 dark:text-white/40">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-med-green" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              No sign-up
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-med-green" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Verified doctors
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-med-green" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              100% free
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Phone Mockup -->
+        <div class="flex justify-center lg:justify-end">
+          <div class="relative animate-float">
+            <!-- Glow -->
+            <div class="absolute inset-0 bg-gradient-to-br from-med-accent/15 via-med-accent/5 to-transparent rounded-[3rem] blur-3xl scale-110"></div>
+            <!-- Phone -->
+            <svg viewBox="0 0 300 600" class="w-64 sm:w-72 lg:w-80 relative z-10 drop-shadow-2xl" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Phone body -->
+              <rect x="4" y="4" width="292" height="592" rx="40" fill="#1d1d1f" stroke="#3a3a3c" stroke-width="2"/>
+              <!-- Screen -->
+              <rect x="12" y="12" width="276" height="576" rx="34" fill="#ffffff"/>
+              <!-- Status bar -->
+              <rect x="12" y="12" width="276" height="44" rx="34" fill="#075e54"/>
+              <text x="28" y="40" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="white">MedAkcess</text>
+              <text x="220" y="40" font-family="Inter, sans-serif" font-size="10" fill="rgba(255,255,255,0.7)">online</text>
+              <!-- Chat area -->
+              <rect x="12" y="56" width="276" height="490" fill="#ECE5DD"/>
+              <!-- Patient message -->
+              <rect x="24" y="80" width="180" height="52" rx="8" fill="#DCF8C6"/>
+              <text x="36" y="102" font-family="Inter, sans-serif" font-size="11" fill="#303030">Hello, I've been having</text>
+              <text x="36" y="118" font-family="Inter, sans-serif" font-size="11" fill="#303030">headaches for 3 days</text>
+              <text x="176" y="126" font-family="Inter, sans-serif" font-size="8" fill="#667781">10:32</text>
+              <!-- Doctor reply -->
+              <rect x="80" y="150" width="190" height="66" rx="8" fill="#ffffff"/>
+              <text x="92" y="172" font-family="Inter, sans-serif" font-size="11" fill="#303030">I understand your concern.</text>
+              <text x="92" y="188" font-family="Inter, sans-serif" font-size="11" fill="#303030">Can you describe the pain</text>
+              <text x="92" y="204" font-family="Inter, sans-serif" font-size="11" fill="#303030">— location and intensity?</text>
+              <text x="226" y="212" font-family="Inter, sans-serif" font-size="8" fill="#667781">10:33</text>
+              <!-- Patient message 2 -->
+              <rect x="24" y="236" width="160" height="52" rx="8" fill="#DCF8C6"/>
+              <text x="36" y="258" font-family="Inter, sans-serif" font-size="11" fill="#303030">It's behind my eyes,</text>
+              <text x="36" y="274" font-family="Inter, sans-serif" font-size="11" fill="#303030">throbbing, about 7/10</text>
+              <text x="166" y="282" font-family="Inter, sans-serif" font-size="8" fill="#667781">10:35</text>
+              <!-- Typing indicator -->
+              <rect x="80" y="310" width="80" height="32" rx="8" fill="#ffffff"/>
+              <circle cx="104" cy="326" r="4" fill="#B0BEC5" class="typing-dot-1"/>
+              <circle cx="120" cy="326" r="4" fill="#B0BEC5" class="typing-dot-2"/>
+              <circle cx="136" cy="326" r="4" fill="#B0BEC5" class="typing-dot-3"/>
+              <!-- Input bar -->
+              <rect x="12" y="546" width="276" height="42" rx="0" fill="#f0f0f0"/>
+              <rect x="20" y="552" width="220" height="30" rx="15" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+              <text x="36" y="572" font-family="Inter, sans-serif" font-size="11" fill="#999">Type a message...</text>
+              <circle cx="260" cy="567" r="14" fill="#25D366"/>
+              <path d="M255 567l4 4 8-8" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Notch -->
+              <rect x="110" y="14" width="80" height="24" rx="12" fill="#1d1d1f"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-med-dark/30 dark:text-white/30">
+      <span class="text-xs font-medium tracking-widest uppercase">Scroll</span>
+      <div class="w-5 h-8 border-2 border-current rounded-full flex justify-center pt-1.5">
+        <div class="w-1 h-2 bg-current rounded-full animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROBLEM STATS ===================== -->
+  <section id="problem" class="py-20 lg:py-32 bg-med-light dark:bg-[#111111] relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 reveal">
+        <span class="inline-block text-sm font-semibold text-med-accent dark:text-med-accent-light tracking-widest uppercase mb-4">The Problem</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+          Healthcare access is<br>
+          <span class="text-red-500">broken</span>
+        </h2>
+        <p class="text-lg text-med-dark/50 dark:text-white/50 max-w-2xl mx-auto">
+          Existing solutions require patients to download new apps, create accounts, and learn new interfaces — creating barriers for the people who need healthcare the most.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-6 lg:gap-8">
+        <!-- Stat 1 -->
+        <div class="reveal reveal-delay-1 bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 text-center shadow-sm border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="text-5xl sm:text-6xl font-extrabold text-med-accent mb-3">70%</div>
+          <p class="text-med-dark/60 dark:text-white/60 font-medium">of rural patients lack access to specialist doctors</p>
+        </div>
+        <!-- Stat 2 -->
+        <div class="reveal reveal-delay-2 bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 text-center shadow-sm border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="text-5xl sm:text-6xl font-extrabold text-med-accent mb-3">6h+</div>
+          <p class="text-med-dark/60 dark:text-white/60 font-medium">average wait time for a medical response</p>
+        </div>
+        <!-- Stat 3 -->
+        <div class="reveal reveal-delay-3 bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 text-center shadow-sm border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="text-5xl sm:text-6xl font-extrabold text-med-accent mb-3">3</div>
+          <p class="text-med-dark/60 dark:text-white/60 font-medium">barriers: download, register, learn a new app</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SOLUTION ===================== -->
+  <section class="py-20 lg:py-32 relative overflow-hidden">
+    <div class="ring-decor w-[500px] h-[500px] -top-60 -left-60 animate-pulse-ring"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 reveal">
+        <span class="inline-block text-sm font-semibold text-med-accent dark:text-med-accent-light tracking-widest uppercase mb-4">The Solution</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+          Meet patients where<br>they <span class="text-med-accent">already are</span>
+        </h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="reveal reveal-delay-1 flex items-start gap-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-green/10 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-med-green" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg mb-1">WhatsApp-Based</h4>
+            <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">2 billion+ users worldwide. In many African markets, WhatsApp IS the internet.</p>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-2 flex items-start gap-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg mb-1">No App Download</h4>
+            <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Uses WhatsApp — already installed on their phone. Zero friction.</p>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-3 flex items-start gap-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg mb-1">No Registration</h4>
+            <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Identified by phone number alone. Send one message and you're started.</p>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-1 flex items-start gap-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg mb-1">Rich Messaging</h4>
+            <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Photos, documents, voice notes — all natively supported in WhatsApp.</p>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-2 flex items-start gap-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg mb-1">Completely Free</h4>
+            <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">WhatsApp messaging costs nothing. Healthcare should too.</p>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-3 flex items-start gap-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg mb-1">Verified Doctors</h4>
+            <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Only HPCZ-verified medical professionals. You're in safe hands.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section id="how-it-works" class="py-20 lg:py-32 bg-med-light dark:bg-[#111111] relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 reveal">
+        <span class="inline-block text-sm font-semibold text-med-accent dark:text-med-accent-light tracking-widest uppercase mb-4">How It Works</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+          Onboarding in<br>
+          <span class="text-med-accent">4 simple steps</span>
+        </h2>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <!-- Step 1 -->
+        <div class="reveal reveal-delay-1 flex gap-6 mb-8">
+          <div class="flex flex-col items-center">
+            <div class="w-14 h-14 rounded-2xl bg-med-accent text-white flex items-center justify-center text-xl font-bold shrink-0 shadow-lg shadow-med-accent/30">1</div>
+            <div class="w-0.5 h-full bg-gradient-to-b from-med-accent/30 to-transparent mt-3"></div>
+          </div>
+          <div class="pb-8">
+            <h3 class="text-xl font-bold mb-2">Send Your First Message</h3>
+            <p class="text-med-dark/60 dark:text-white/60 leading-relaxed">Message the MedAkcess WhatsApp number. Your profile is created automatically from your phone number — no forms, no sign-up.</p>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="reveal reveal-delay-2 flex gap-6 mb-8">
+          <div class="flex flex-col items-center">
+            <div class="w-14 h-14 rounded-2xl bg-med-accent/80 text-white flex items-center justify-center text-xl font-bold shrink-0 shadow-lg shadow-med-accent/30">2</div>
+            <div class="w-0.5 h-full bg-gradient-to-b from-med-accent/20 to-transparent mt-3"></div>
+          </div>
+          <div class="pb-8">
+            <h3 class="text-xl font-bold mb-2">Give Consent</h3>
+            <p class="text-med-dark/60 dark:text-white/60 leading-relaxed">You'll receive a welcome message with a clear explanation of how your data is used. Reply <strong class="text-med-accent dark:text-med-accent-light">"AGREE"</strong> to proceed. Your consent is recorded with a timestamp.</p>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="reveal reveal-delay-3 flex gap-6 mb-8">
+          <div class="flex flex-col items-center">
+            <div class="w-14 h-14 rounded-2xl bg-med-accent/60 text-white flex items-center justify-center text-xl font-bold shrink-0 shadow-lg shadow-med-accent/30">3</div>
+            <div class="w-0.5 h-full bg-gradient-to-b from-med-accent/15 to-transparent mt-3"></div>
+          </div>
+          <div class="pb-8">
+            <h3 class="text-xl font-bold mb-2">Select a Doctor</h3>
+            <p class="text-med-dark/60 dark:text-white/60 leading-relaxed">Browse a numbered list of verified doctors with their specialisation and years of experience. Reply with a number to choose your doctor.</p>
+          </div>
+        </div>
+        <!-- Step 4 -->
+        <div class="reveal reveal-delay-4 flex gap-6">
+          <div class="flex flex-col items-center">
+            <div class="w-14 h-14 rounded-2xl bg-med-accent text-white flex items-center justify-center text-xl font-bold shrink-0 shadow-lg shadow-med-accent/30">4</div>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-2">You're Connected</h3>
+            <p class="text-med-dark/60 dark:text-white/60 leading-relaxed">A conversation is created and your doctor is notified in real-time. You can now send your medical question — text, images, documents, or voice notes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURES ===================== -->
+  <section id="features" class="py-20 lg:py-32 relative overflow-hidden">
+    <div class="ring-decor w-[400px] h-[400px] top-20 -right-40 animate-pulse-ring" style="animation-delay: 1.5s;"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-12 reveal">
+        <span class="inline-block text-sm font-semibold text-med-accent dark:text-med-accent-light tracking-widest uppercase mb-4">Features</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+          Built for<br>
+          <span class="text-med-accent">everyone</span>
+        </h2>
+      </div>
+
+      <!-- Tab toggle -->
+      <div class="flex justify-center mb-12 reveal">
+        <div class="relative bg-med-light dark:bg-[#1a1a1a] rounded-full p-1.5 border border-black/5 dark:border-white/5">
+          <div id="tab-bg" class="tab-indicator absolute top-1.5 left-1.5 h-[calc(100%-12px)] w-[calc(50%-6px)] bg-white dark:bg-[#2a2a2a] rounded-full shadow-sm"></div>
+          <button id="tab-patients" class="relative z-10 px-6 py-2.5 text-sm font-semibold rounded-full transition-colors duration-200 text-med-dark dark:text-white" onclick="switchTab('patients')">For Patients</button>
+          <button id="tab-doctors" class="relative z-10 px-6 py-2.5 text-sm font-semibold rounded-full transition-colors duration-200 text-med-dark/50 dark:text-white/50" onclick="switchTab('doctors')">For Doctors</button>
+        </div>
+      </div>
+
+      <!-- Patient features -->
+      <div id="patient-features" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="reveal reveal-delay-1 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Instant Access</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Connected to a verified doctor within minutes. No waiting rooms, no appointments.</p>
+        </div>
+        <div class="reveal reveal-delay-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Privacy First</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Explicit consent required before any data is stored. You're always in control.</p>
+        </div>
+        <div class="reveal reveal-delay-3 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-green/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Full Flexibility</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Switch doctors or opt out anytime with simple WhatsApp commands.</p>
+        </div>
+        <div class="reveal reveal-delay-1 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Rich Messaging</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Send photos, documents, and voice notes. All supported natively.</p>
+        </div>
+        <div class="reveal reveal-delay-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Verified Doctors</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Every doctor holds a valid HPCZ licence. Admin-verified before appearing.</p>
+        </div>
+        <div class="reveal reveal-delay-3 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Simple Commands</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">/help, /status, /switch, /stop — full control right from your chat.</p>
+        </div>
+      </div>
+
+      <!-- Doctor features -->
+      <div id="doctor-features" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 hidden">
+        <div class="reveal reveal-delay-1 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Real-time Updates</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Instant WebSocket notifications. No page refresh needed. Ever.</p>
+        </div>
+        <div class="reveal reveal-delay-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Organised Workflow</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">All conversations in one place. Sort by most recent, track by status.</p>
+        </div>
+        <div class="reveal reveal-delay-3 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-green/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Performance Metrics</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Response time stats, patient load distribution, and trend analysis.</p>
+        </div>
+        <div class="reveal reveal-delay-1 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Smart Alerts</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Automated WhatsApp reminders for unattended messages after 6 hours.</p>
+        </div>
+        <div class="reveal reveal-delay-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-med-accent/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-med-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Audit Protection</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Every action logged with actor, target, IP, and timestamp for accountability.</p>
+        </div>
+        <div class="reveal reveal-delay-3 bg-white dark:bg-[#1a1a1a] rounded-2xl p-7 border border-black/5 dark:border-white/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Mobile Dashboard</h4>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm leading-relaxed">Full-featured Flutter mobile app for iOS and Android. Manage on the go.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PATIENT COMMANDS ===================== -->
+  <section class="py-20 lg:py-32 bg-med-light dark:bg-[#111111] relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 reveal">
+        <span class="inline-block text-sm font-semibold text-med-accent dark:text-med-accent-light tracking-widest uppercase mb-4">Patient Controls</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+          Simple commands,<br>
+          <span class="text-med-accent">full control</span>
+        </h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
+        <div class="reveal reveal-delay-1 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 text-center hover:shadow-lg transition-all duration-300">
+          <div class="text-2xl font-mono font-bold text-med-accent dark:text-med-accent-light mb-2">/help</div>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm">Show all available commands</p>
+        </div>
+        <div class="reveal reveal-delay-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 text-center hover:shadow-lg transition-all duration-300">
+          <div class="text-2xl font-mono font-bold text-med-accent dark:text-med-accent-light mb-2">/status</div>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm">View current doctor & status</p>
+        </div>
+        <div class="reveal reveal-delay-3 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 text-center hover:shadow-lg transition-all duration-300">
+          <div class="text-2xl font-mono font-bold text-med-accent mb-2">/switch</div>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm">Switch to a different doctor</p>
+        </div>
+        <div class="reveal reveal-delay-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-black/5 dark:border-white/5 text-center hover:shadow-lg transition-all duration-300">
+          <div class="text-2xl font-mono font-bold text-red-500 mb-2">/stop</div>
+          <p class="text-med-dark/50 dark:text-white/50 text-sm">Opt out of the platform</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section id="faq" class="py-20 lg:py-32 relative overflow-hidden">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 reveal">
+        <span class="inline-block text-sm font-semibold text-med-accent dark:text-med-accent-light tracking-widest uppercase mb-4">FAQ</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
+          Common<br>questions
+        </h2>
+      </div>
+
+      <div class="space-y-3">
+        <!-- FAQ 1 -->
+        <div class="faq-item reveal reveal-delay-1 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-lg">Do I need an account?</span>
+            <svg class="faq-chevron w-5 h-5 text-med-dark/40 dark:text-white/40 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p class="px-6 pb-6 text-med-dark/60 dark:text-white/60 leading-relaxed">No. You're identified by your WhatsApp phone number alone. No sign-up, no registration, no new password to remember. Just send a message.</p>
+          </div>
+        </div>
+        <!-- FAQ 2 -->
+        <div class="faq-item reveal reveal-delay-2 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-lg">Is my data secure?</span>
+            <svg class="faq-chevron w-5 h-5 text-med-dark/40 dark:text-white/40 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p class="px-6 pb-6 text-med-dark/60 dark:text-white/60 leading-relaxed">Yes. Your data is stored in encrypted PostgreSQL databases. We use JWT authentication and bcrypt password hashing. Only authorised medical professionals can access your information. Explicit consent is required before any data is stored.</p>
+          </div>
+        </div>
+        <!-- FAQ 3 -->
+        <div class="faq-item reveal reveal-delay-3 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-lg">Can I switch doctors?</span>
+            <svg class="faq-chevron w-5 h-5 text-med-dark/40 dark:text-white/40 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p class="px-6 pb-6 text-med-dark/60 dark:text-white/60 leading-relaxed">Absolutely. Type <strong>/switch</strong> on WhatsApp anytime. Your current conversation will be resolved and you'll be presented with the list of available doctors to choose from.</p>
+          </div>
+        </div>
+        <!-- FAQ 4 -->
+        <div class="faq-item reveal reveal-delay-4 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-lg">How do I opt out?</span>
+            <svg class="faq-chevron w-5 h-5 text-med-dark/40 dark:text-white/40 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p class="px-6 pb-6 text-med-dark/60 dark:text-white/60 leading-relaxed">Type <strong>/stop</strong> on WhatsApp. Your current conversation will be resolved and your account will be marked as stopped. You can always start again by sending a new message.</p>
+          </div>
+        </div>
+        <!-- FAQ 5 -->
+        <div class="faq-item reveal reveal-delay-5 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-lg">How are doctors verified?</span>
+            <svg class="faq-chevron w-5 h-5 text-med-dark/40 dark:text-white/40 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p class="px-6 pb-6 text-med-dark/60 dark:text-white/60 leading-relaxed">Every doctor must hold a valid HPCZ (Health Professions Council of Zambia) licence. Admins review and verify each doctor's credentials before they appear in the doctor list. Only verified professionals are available for consultations.</p>
+          </div>
+        </div>
+        <!-- FAQ 6 -->
+        <div class="faq-item reveal reveal-delay-5 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-lg">What if my doctor doesn't respond?</span>
+            <svg class="faq-chevron w-5 h-5 text-med-dark/40 dark:text-white/40 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p class="px-6 pb-6 text-med-dark/60 dark:text-white/60 leading-relaxed">Our system automatically sends WhatsApp reminders to doctors after 6 hours of no response. Multiple unattended patients are grouped into a single notification. You can also use /switch to change doctors at any time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA ===================== -->
+  <section class="py-20 lg:py-32 relative overflow-hidden">
+    <div class="absolute inset-0 bg-med-accent opacity-90"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMS41IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDgpIi8+PC9zdmc+')] opacity-40"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div class="reveal">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-6">
+          Get started in seconds
+        </h2>
+        <p class="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Send a WhatsApp message to begin your consultation. No download. No registration. Just healthcare, one message away.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="https://wa.me/260979040735" target="_blank" rel="noopener" class="group inline-flex items-center justify-center gap-2.5 bg-white hover:bg-white/90 text-med-accent font-bold text-lg px-8 py-4 rounded-full transition-all duration-200 shadow-2xl hover:shadow-white/20 hover:scale-105">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Chat on WhatsApp
+            <svg class="w-5 h-5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <p class="text-white/50 text-sm mt-6">Or call us at +260 979 040 735</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="bg-med-light dark:bg-[#0a0a0a] border-t border-black/5 dark:border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <!-- Brand -->
+        <div class="sm:col-span-2 lg:col-span-2">
+          <img src="assets/logo.svg" alt="MedAkcess" class="h-9 w-auto dark:invert dark:hue-rotate-180 mb-4">
+          <p class="text-med-dark/50 dark:text-white/50 max-w-sm leading-relaxed mb-6">
+            Healthcare, One Message Away. A WhatsApp-based medical consultation platform connecting patients with verified doctors.
+          </p>
+          <a href="https://wa.me/260979040735" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-med-green hover:text-med-green-dark font-semibold text-sm transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            +260 979 040 735
+          </a>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="font-semibold text-sm uppercase tracking-wider mb-4 text-med-dark/40 dark:text-white/40">Quick Links</h4>
+          <ul class="space-y-3">
+            <li><a href="#features" class="text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light text-sm transition-colors">Features</a></li>
+            <li><a href="#how-it-works" class="text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light text-sm transition-colors">How It Works</a></li>
+            <li><a href="#faq" class="text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light text-sm transition-colors">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Platform -->
+        <div>
+          <h4 class="font-semibold text-sm uppercase tracking-wider mb-4 text-med-dark/40 dark:text-white/40">Platform</h4>
+          <ul class="space-y-3">
+            <li><a href="https://wa.me/260979040735" target="_blank" rel="noopener" class="text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light text-sm transition-colors">For Patients</a></li>
+            <li><a href="#features" class="text-med-dark/70 dark:text-white/70 hover:text-med-accent dark:hover:text-med-accent-light text-sm transition-colors">For Doctors</a></li>
+            <li><span class="text-med-dark/40 dark:text-white/40 text-sm">Zambia</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="mt-12 pt-8 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-med-dark/40 dark:text-white/40 text-sm">&copy; 2026 MedAkcess. All rights reserved.</p>
+        <p class="text-med-dark/30 dark:text-white/30 text-xs">Healthcare, One Message Away.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script>
+    // ===== DARK MODE TOGGLE =====
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    // Check for saved preference or system preference
+    function getThemePreference() {
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+      localStorage.setItem('theme', theme);
+    }
+
+    // Apply on load
+    applyTheme(getThemePreference());
+
+    themeToggle.addEventListener('click', () => {
+      const current = html.classList.contains('dark') ? 'dark' : 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // Listen for system preference changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+
+    // ===== MOBILE MENU =====
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
+    mobileNavLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+
+    // ===== FAQ ACCORDION =====
+    function toggleFaq(button) {
+      const item = button.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+
+      // Close all others
+      document.querySelectorAll('.faq-item.open').forEach(el => {
+        if (el !== item) el.classList.remove('open');
+      });
+
+      item.classList.toggle('open', !wasOpen);
+    }
+
+    // ===== FEATURE TABS =====
+    function switchTab(tab) {
+      const patientFeatures = document.getElementById('patient-features');
+      const doctorFeatures = document.getElementById('doctor-features');
+      const tabPatients = document.getElementById('tab-patients');
+      const tabDoctors = document.getElementById('tab-doctors');
+      const tabBg = document.getElementById('tab-bg');
+
+      if (tab === 'patients') {
+        patientFeatures.classList.remove('hidden');
+        doctorFeatures.classList.add('hidden');
+        tabPatients.classList.remove('text-med-dark/50', 'dark:text-white/50');
+        tabPatients.classList.add('text-med-dark', 'dark:text-white');
+        tabDoctors.classList.remove('text-med-dark', 'dark:text-white');
+        tabDoctors.classList.add('text-med-dark/50', 'dark:text-white/50');
+        tabBg.style.transform = 'translateX(0)';
+      } else {
+        patientFeatures.classList.add('hidden');
+        doctorFeatures.classList.remove('hidden');
+        tabDoctors.classList.remove('text-med-dark/50', 'dark:text-white/50');
+        tabDoctors.classList.add('text-med-dark', 'dark:text-white');
+        tabPatients.classList.remove('text-med-dark', 'dark:text-white');
+        tabPatients.classList.add('text-med-dark/50', 'dark:text-white/50');
+        tabBg.style.transform = 'translateX(100%)';
+      }
+
+      // Re-trigger reveal animations for newly visible cards
+      const activeFeatures = tab === 'patients' ? patientFeatures : doctorFeatures;
+      activeFeatures.querySelectorAll('.reveal').forEach(el => {
+        el.classList.remove('active');
+        setTimeout(() => el.classList.add('active'), 50);
+      });
+    }
+
+    // ===== SCROLL REVEAL ANIMATIONS =====
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ===== NAVBAR SCROLL EFFECT =====
+    const navbar = document.getElementById('navbar');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      if (currentScroll > 50) {
+        navbar.classList.add('shadow-sm');
+      } else {
+        navbar.classList.remove('shadow-sm');
+      }
+      lastScroll = currentScroll;
+    });
+
+    // ===== SMOOTH SCROLL FOR ANCHOR LINKS =====
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

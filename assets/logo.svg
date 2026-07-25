@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <!-- Icon -->
+  <circle cx="24" cy="24" r="24" fill="#0071e3"/>
+  <g transform="translate(8, 4)">
+    <circle cx="16" cy="8" r="6.5" fill="white"/>
+    <path d="M8 20 C8 16.5, 24 16.5, 24 20 L25.5 33 L6.5 33 Z" fill="white" rx="1.5"/>
+    <path d="M11.5 14.5 Q11.5 26, 16 29.5" stroke="#0071e3" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="16" cy="31" r="2.5" fill="#0071e3"/>
+    <circle cx="16" cy="31" r="1.2" fill="white"/>
+  </g>
+  <!-- Text -->
+  <text x="56" y="31" font-family="Inter, -apple-system, sans-serif" font-size="24" font-weight="700" fill="currentColor" class="logo-text">MedAkcess</text>
+</svg>
